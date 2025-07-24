@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard by MMH ANAS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Hind Siliguri', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .chat-box::-webkit-scrollbar { width: 6px; }
+        .chat-box::-webkit-scrollbar-track { background: #2d3748; }
+        .chat-box::-webkit-scrollbar-thumb { background: #4a5568; border-radius: 3px; }
+        .chat-box::-webkit-scrollbar-thumb:hover { background: #718096; }
+        .calc-button { transition: background-color 0.2s, transform 0.1s; }
+        .calc-button:active { transform: scale(0.95); }
+        .tab-button.active {
+            border-color: #4f46e5;
+            color: #e0e7ff;
+            background-color: rgba(79, 70, 229, 0.2);
+        }
+        .lang-button.active {
+            background-color: #4f46e5;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+
+    <!-- Login Page -->
+    <div id="login-page" class="w-full max-w-sm">
+        <div class="bg-gray-800 shadow-2xl rounded-2xl px-8 pt-6 pb-8 mb-4">
+            <div class="flex justify-end mb-4">
+                <div class="flex border border-gray-600 rounded-lg">
+                    <button id="lang-bn" class="lang-button text-sm font-semibold py-1 px-3 rounded-l-md transition-colors active">বাংলা</button>
+                    <button id="lang-en" class="lang-button text-sm font-semibold py-1 px-3 rounded-r-md transition-colors">English</button>
+                </div>
+            </div>
+
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-indigo-400" data-lang-key="welcomeTitle">স্বাগতম!</h1>
+                <p class="text-gray-400 mt-2" data-lang-key="loginPrompt">আপনার ড্যাশবোর্ডে লগইন করুন</p>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-300 text-sm font-bold mb-2" for="username" data-lang-key="usernameLabel">ইউজারনেম</label>
+                <input class="shadow-inner appearance-none border border-gray-700 rounded-lg w-full py-3 px-4 bg-gray-700 text-gray-200 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" id="username" type="text" placeholder="ইউজারনেম দিন" data-lang-key="usernamePlaceholder">
+            </div>
+            <div class="mb-6">
+                <label class="block text-gray-300 text-sm font-bold mb-2" for="password" data-lang-key="passwordLabel">পাসওয়ার্ড</label>
+                <input class="shadow-inner appearance-none border border-gray-700 rounded-lg w-full py-3 px-4 bg-gray-700 text-gray-200 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" id="password" type="password" placeholder="পাসওয়ার্ড দিন" data-lang-key="passwordPlaceholder">
+            </div>
+            <div id="error-message" class="text-red-400 text-center text-sm mb-4 h-5"></div>
+            <div class="flex items-center justify-between">
+                <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline w-full transition-all duration-300" type="button" id="login-button" data-lang-key="loginButton">লগইন করুন</button>
+            </div>
+        </div>
+        <p class="text-center text-gray-500 text-xs" data-lang-key="footerText">Design by MMH ANAS</p>
+    </div>
+
+    <!-- Main Dashboard Page -->
+    <div id="dashboard-page" class="hidden w-full max-w-4xl h-[90vh] md:h-[80vh]">
+        <div class="bg-gray-800 shadow-2xl rounded-2xl h-full flex flex-col">
+            <header class="p-4 border-b border-gray-700 flex justify-between items-center">
+                <h1 class="text-xl md:text-2xl font-bold text-indigo-400" data-lang-key="dashboardTitle">ড্যাশবোর্ড</h1>
+                 <button id="logout-button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-all duration-300" data-lang-key="logoutButton">লগআউট</button>
+            </header>
+            
+            <div class="p-4 border-b border-gray-700">
+                <div class="flex space-x-2 md:space-x-4">
+                    <button class="tab-button flex-1 py-2 px-4 rounded-lg border-2 border-transparent font-semibold transition-colors active" data-tab="calculator" data-lang-key="calculatorTab">ক্যালকুলেটর</button>
+                    <button class="tab-button flex-1 py-2 px-4 rounded-lg border-2 border-transparent font-semibold transition-colors" data-tab="chatbot" data-lang-key="chatbotTab">জেমিনি চ্যাটবট</button>
+                </div>
+            </div>
+
+            <main class="flex-grow p-4 overflow-y-auto">
+                <div id="calculator-section" class="tab-content">
+                    <div class="w-full max-w-sm mx-auto bg-gray-900 p-6 rounded-2xl shadow-lg">
+                        <div id="calc-display" class="bg-gray-700 text-right rounded-lg p-4 mb-4 text-4xl font-mono break-all h-20 flex items-end justify-end">0</div>
+                        <div class="grid grid-cols-4 gap-3">
+                            <button class="calc-button bg-gray-600 hover:bg-gray-500 text-white text-2xl p-4 rounded-lg" data-key="clear">C</button>
+                            <button class="calc-button bg-gray-600 hover:bg-gray-500 text-white text-2xl p-4 rounded-lg" data-key="backspace">⌫</button>
+                            <button class="calc-button bg-indigo-500 hover:bg-indigo-600 text-white text-2xl p-4 rounded-lg" data-key="%">%</button>
+                            <button class="calc-button bg-indigo-500 hover:bg-indigo-600 text-white text-2xl p-4 rounded-lg" data-key="/">÷</button>
+                            <button class="calc-button bg-gray-700 hover:bg-gray-600 text-white text-2xl p-4 rounded-lg" data-key="7">7</button>
+                            <button class="calc-button bg-gray-700 hover:bg-gray-600 text-white text-2xl p-4 rounded-lg" data-key="8">8</button>
+                            <button class="calc-button bg-gray-700 hover:bg-gray-600 text-white text-2xl p-4 rounded-lg" data-key="9">9</button>
+                            <button class="calc-button bg-indigo-500 hover:bg-indigo-600 text-white text-2xl p-4 rounded-lg" data-key="*">×</button>
+                            <button class="calc-button bg-gray-700 hover:bg-gray-600 text-white text-2xl p-4 rounded-lg" data-key="4">4</button>
+                            <button class="calc-button bg-gray-700 hover:bg-gray-600 text-white text-2xl p-4 rounded-lg" data-key="5">5</button>
+                            <button class="calc-button bg-gray-700 hover:bg-gray-600 text-white text-2xl p-4 rounded-lg" data-key="6">6</button>
+                            <button class="calc-button bg-indigo-500 hover:bg-indigo-600 text-white text-2xl p-4 rounded-lg" data-key="-">-</button>
+                            <button class="calc-button bg-gray-700 hover:bg-gray-600 text-white text-2xl p-4 rounded-lg" data-key="1">1</button>
+                            <button class="calc-button bg-gray-700 hover:bg-gray-600 text-white text-2xl p-4 rounded-lg" data-key="2">2</button>
+                            <button class="calc-button bg-gray-700 hover:bg-gray-600 text-white text-2xl p-4 rounded-lg" data-key="3">3</button>
+                            <button class="calc-button bg-indigo-500 hover:bg-indigo-600 text-white text-2xl p-4 rounded-lg" data-key="+">+</button>
+                            <button class="calc-button col-span-2 bg-gray-700 hover:bg-gray-600 text-white text-2xl p-4 rounded-lg" data-key="0">0</button>
+                            <button class="calc-button bg-gray-700 hover:bg-gray-600 text-white text-2xl p-4 rounded-lg" data-key=".">.</button>
+                            <button class="calc-button bg-green-600 hover:bg-green-700 text-white text-2xl p-4 rounded-lg" data-key="=">=</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="chatbot-section" class="tab-content hidden h-full">
+                    <div class="flex flex-col h-full max-w-2xl mx-auto">
+                        <div id="chat-box" class="chat-box flex-grow bg-gray-900 p-4 rounded-t-lg overflow-y-auto space-y-4">
+                            <div class="flex justify-start">
+                                <div class="bg-indigo-600 text-white p-3 rounded-lg max-w-xs" data-lang-key="chatInitialMsg">
+                                    হ্যালো! আমি জেমিনি। আপনার যা জানার আছে, জিজ্ঞাসা করতে পারেন।
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-900 rounded-b-lg">
+                            <form id="chat-form" class="flex items-center space-x-2">
+                                <input type="text" id="chat-input" class="w-full bg-gray-700 text-gray-200 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="এখানে আপনার প্রশ্ন লিখুন..." autocomplete="off" data-lang-key="chatPlaceholder">
+                                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors" data-lang-key="chatSendButton">পাঠান</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <footer class="text-center text-gray-500 text-xs p-4 border-t border-gray-700" data-lang-key="footerText">
+                Design by MMH ANAS
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // --- Language & Translation Logic ---
+        const translations = {
+            bn: {
+                welcomeTitle: 'স্বাগতম!',
+                loginPrompt: 'আপনার ড্যাশবোর্ডে লগইন করুন',
+                usernameLabel: 'ইউজারনেম',
+                usernamePlaceholder: 'ইউজারনেম দিন',
+                passwordLabel: 'পাসওয়ার্ড',
+                passwordPlaceholder: 'পাসওয়ার্ড দিন',
+                loginButton: 'লগইন করুন',
+                errorMsg: 'ভুল ইউজারনেম বা পাসওয়ার্ড।',
+                dashboardTitle: 'ড্যাশবোর্ড',
+                logoutButton: 'লগআউট',
+                calculatorTab: 'ক্যালকুলেটর',
+                chatbotTab: 'জেমিনি চ্যাটবট',
+                chatInitialMsg: 'হ্যালো! আমি জেমিনি। আপনার যা জানার আছে, জিজ্ঞাসা করতে পারেন।',
+                chatPlaceholder: 'এখানে আপনার প্রশ্ন লিখুন...',
+                chatSendButton: 'পাঠান',
+                chatTyping: '... টাইপ করছে',
+                chatApiError: 'একটি সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+                chatEmptyResponse: 'দুঃখিত, আমি উত্তর খুঁজে পাইনি।',
+                footerText: 'Design by MMH ANAS'
+            },
+            en: {
+                welcomeTitle: 'Welcome!',
+                loginPrompt: 'Login to your dashboard',
+                usernameLabel: 'Username',
+                usernamePlaceholder: 'Enter username',
+                passwordLabel: 'Password',
+                passwordPlaceholder: 'Enter password',
+                loginButton: 'Login',
+                errorMsg: 'Incorrect username or password.',
+                dashboardTitle: 'Dashboard',
+                logoutButton: 'Logout',
+                calculatorTab: 'Calculator',
+                chatbotTab: 'Gemini Chatbot',
+                chatInitialMsg: 'Hello! I am Gemini. You can ask me anything.',
+                chatPlaceholder: 'Type your question here...',
+                chatSendButton: 'Send',
+                chatTyping: '... is typing',
+                chatApiError: 'An error occurred. Please try again.',
+                chatEmptyResponse: 'Sorry, I could not find an answer.',
+                footerText: 'Design by MMH ANAS'
+            }
+        };
+
+        let currentLanguage = 'bn';
+        const langBnButton = document.getElementById('lang-bn');
+        const langEnButton = document.getElementById('lang-en');
+
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            document.documentElement.lang = lang;
+            
+            document.querySelectorAll('[data-lang-key]').forEach(element => {
+                const key = element.dataset.langKey;
+                if (translations[lang][key]) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        element.textContent = translations[lang][key];
+                    }
+                }
+            });
+            
+            if (lang === 'bn') {
+                langBnButton.classList.add('active');
+                langEnButton.classList.remove('active');
+            } else {
+                langEnButton.classList.add('active');
+                langBnButton.classList.remove('active');
+            }
+        }
+
+        langBnButton.addEventListener('click', () => setLanguage('bn'));
+        langEnButton.addEventListener('click', () => setLanguage('en'));
+        
+        // --- Page Element References ---
+        const loginPage = document.getElementById('login-page');
+        const dashboardPage = document.getElementById('dashboard-page');
+        const loginButton = document.getElementById('login-button');
+        const logoutButton = document.getElementById('logout-button');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const errorMessage = document.getElementById('error-message');
+
+        // --- Page Switching Logic ---
+        loginButton.addEventListener('click', () => {
+            if (usernameInput.value === 'UX4P7gMcE79' && passwordInput.value === 'Anas2010') {
+                loginPage.classList.add('hidden');
+                dashboardPage.classList.remove('hidden');
+                errorMessage.textContent = '';
+                // Translate the entire dashboard after it becomes visible
+                setLanguage(currentLanguage);
+            } else {
+                errorMessage.textContent = translations[currentLanguage].errorMsg;
+                usernameInput.classList.add('border-red-500');
+                passwordInput.classList.add('border-red-500');
+                setTimeout(() => {
+                    errorMessage.textContent = '';
+                    usernameInput.classList.remove('border-red-500');
+                    passwordInput.classList.remove('border-red-500');
+                }, 3000);
+            }
+        });
+
+        logoutButton.addEventListener('click', () => {
+             dashboardPage.classList.add('hidden');
+             loginPage.classList.remove('hidden');
+             usernameInput.value = '';
+             passwordInput.value = '';
+             // Reset to default language 'bn' for the login page
+             setLanguage('bn');
+        });
+
+        // --- Tab Switching Logic ---
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.add('hidden'));
+                button.classList.add('active');
+                const tab = button.getAttribute('data-tab');
+                document.getElementById(`${tab}-section`).classList.remove('hidden');
+            });
+        });
+
+        // --- Calculator Logic ---
+        const calcDisplay = document.getElementById('calc-display');
+        const calcButtons = document.querySelector('#calculator-section .grid');
+        let currentInput = '0';
+        let operator = null;
+        let previousInput = null;
+        let shouldResetDisplay = false;
+
+        function updateDisplay() { calcDisplay.textContent = currentInput; }
+
+        calcButtons.addEventListener('click', (event) => {
+            const key = event.target.dataset.key;
+            if (!key) return;
+
+            if (!isNaN(key) || key === '.') {
+                if (key === '.' && currentInput.includes('.')) return;
+                if (currentInput === '0' && key !== '.') currentInput = key;
+                else if (shouldResetDisplay) { currentInput = key; shouldResetDisplay = false; }
+                else currentInput += key;
+            } else if (['+', '-', '*', '/', '%'].includes(key)) {
+                if (operator && !shouldResetDisplay) calculate();
+                operator = key;
+                previousInput = currentInput;
+                shouldResetDisplay = true;
+            } else if (key === '=') {
+                if (operator && previousInput !== null) { calculate(); operator = null; }
+            } else if (key === 'clear') {
+                currentInput = '0'; operator = null; previousInput = null;
+            } else if (key === 'backspace') {
+                currentInput = currentInput.slice(0, -1) || '0';
+            }
+            updateDisplay();
+        });
+
+        function calculate() {
+            if (previousInput === null || operator === null) return;
+            let result;
+            try {
+                const expression = `${parseFloat(previousInput)} ${operator} ${parseFloat(currentInput)}`;
+                result = eval(expression);
+                if (!isFinite(result)) throw new Error("Error");
+                currentInput = String(result);
+            } catch (error) { currentInput = "Error"; }
+            shouldResetDisplay = true;
+        }
+
+        // --- Gemini Chatbot Logic ---
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatBox = document.getElementById('chat-box');
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userMessage = chatInput.value.trim();
+            if (!userMessage) return;
+
+            appendMessage(userMessage, 'user');
+            chatInput.value = '';
+            const typingIndicator = appendMessage(translations[currentLanguage].chatTyping, 'bot', true);
+
+            try {
+                const apiKey = ""; // Handled by environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const payload = { contents: [{ role: "user", parts: [{ text: userMessage }] }] };
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error(`API error: ${response.statusText}`);
+                const result = await response.json();
+                
+                let botResponse = translations[currentLanguage].chatEmptyResponse;
+                if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+                    botResponse = result.candidates[0].content.parts[0].text;
+                }
+                typingIndicator.remove();
+                appendMessage(botResponse, 'bot');
+            } catch (error) {
+                console.error('Gemini API Error:', error);
+                typingIndicator.remove();
+                appendMessage(translations[currentLanguage].chatApiError, 'bot');
+            }
+        });
+
+        function appendMessage(message, sender, isTyping = false) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+            const element = document.createElement('div');
+            element.className = `p-3 rounded-lg max-w-md ${sender === 'user' ? 'bg-indigo-500 text-white' : 'bg-gray-700 text-gray-200'}`;
+            element.textContent = message;
+            if (isTyping) element.classList.add('animate-pulse');
+            wrapper.appendChild(element);
+            chatBox.appendChild(wrapper);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            return wrapper;
+        }
+
+        // Initialize with default language
+        document.addEventListener('DOMContentLoaded', () => setLanguage('bn'));
+    </script>
+</body>
+</html

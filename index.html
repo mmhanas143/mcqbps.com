@@ -321,7 +321,7 @@
 
             try {
                 const apiKey = "AIzaSyAnLF_GBarnrGR1pz1bUYiWZA0csNhw088"; // Handled by environment
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${AIzaSyCuJQ43jPDgWMxf7m_o8_Yfn-dtx78e0lc}`;
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
                 const payload = { contents: [{ role: "user", parts: [{ text: userMessage }] }] };
                 const response = await fetch(apiUrl, {
                     method: 'POST',

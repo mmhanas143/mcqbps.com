@@ -297,8 +297,13 @@
             if (previousInput === null || operator === null) return;
             let result;
             try {
-                const expression = `${parseFloat(previousInput)} ${operator} ${parseFloat(currentInput)}`;
-                result = eval(expression);
+                // Replace percent operator before eval
+                if(operator === '%') {
+                    result = parseFloat(previousInput) % parseFloat(currentInput);
+                } else {
+                    const expression = `${parseFloat(previousInput)} ${operator} ${parseFloat(currentInput)}`;
+                    result = eval(expression);
+                }
                 if (!isFinite(result)) throw new Error("Error");
                 currentInput = String(result);
             } catch (error) { currentInput = "Error"; }
@@ -320,19 +325,32 @@
             const typingIndicator = appendMessage(translations[currentLanguage].chatTyping, 'bot', true);
 
             try {
-                const apiKey = "AIzaSyAnLF_GBarnrGR1pz1bUYiWZA0csNhw088"; // Handled by environment
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                const payload = { contents: [{ role: "user", parts: [{ text: userMessage }] }] };
+                // --- এইখানে আপনার দেওয়া এপিআই কী বসানো হয়েছে ---
+                const apiKey = "AIzaSyAnLF_GBarnrGR1pz1bUYiWZA0csNhw088"; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+                
+                const payload = { 
+                    contents: [{ 
+                        parts: [{ text: userMessage }] 
+                    }] 
+                };
+
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                if (!response.ok) throw new Error(`API error: ${response.statusText}`);
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('API Error Response:', errorData);
+                    throw new Error(`API error: ${response.statusText}`);
+                }
+                
                 const result = await response.json();
                 
                 let botResponse = translations[currentLanguage].chatEmptyResponse;
-                if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+                if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts[0].text) {
                     botResponse = result.candidates[0].content.parts[0].text;
                 }
                 typingIndicator.remove();
@@ -361,4 +379,4 @@
         document.addEventListener('DOMContentLoaded', () => setLanguage('bn'));
     </script>
 </body>
-</html
+</html>
